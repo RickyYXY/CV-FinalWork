@@ -4,6 +4,11 @@ import torch.nn.functional as F
 
 
 def seq_photo_loss(flow_preds_fw, flow_preds_bw, im1, im2, gamma=0.8,):
+    """
+    Args:
+        flow_preds_fw/bw: List[Tensor: B x 2 x H x W]
+        im1/2: Tensor: B x 3 x H x W
+    """
     n_predictions = len(flow_preds_fw)
     photo_loss_sum = 0.0
 
@@ -23,7 +28,11 @@ def seq_photo_loss(flow_preds_fw, flow_preds_bw, im1, im2, gamma=0.8,):
 
         photo_loss_sum += i_weight * photo_loss
 
-    return photo_loss_sum
+    metrics = {
+        'photo_loss': photo_loss_sum.item(),
+    }
+
+    return photo_loss_sum, metrics
 
 
 def photo_loss_multi_type(x, y, occ_mask, photo_loss_type='abs_robust',  # abs_robust, charbonnier,L1, SSIM
