@@ -22,6 +22,11 @@ from unsup_loss import seq_photo_loss
 
 from torch.utils.tensorboard import SummaryWriter
 
+cpu_num = 4 # 这里设置成你想运行的CPU个数
+os.environ["OMP_NUM_THREADS"] = str(cpu_num)  # noqa
+os.environ["MKL_NUM_THREADS"] = str(cpu_num) # noqa
+torch.set_num_threads(cpu_num )
+
 
 try:
     from torch.cuda.amp import GradScaler

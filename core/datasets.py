@@ -98,9 +98,9 @@ class FlowDataset(data.Dataset):
     def __len__(self):
         return len(self.image_list)
         
-
+# maomao change
 class MpiSintel(FlowDataset):
-    def __init__(self, aug_params=None, split='training', root='datasets/Sintel', dstype='clean'):
+    def __init__(self, aug_params=None, split='training', root='/mnt/nas_8/datasets/Sintel/MPI-Sintel-complete/', dstype='clean'):
         super(MpiSintel, self).__init__(aug_params)
         flow_root = osp.join(root, split, 'flow')
         image_root = osp.join(root, split, dstype)
@@ -110,9 +110,23 @@ class MpiSintel(FlowDataset):
 
         for scene in os.listdir(image_root):
             image_list = sorted(glob(osp.join(image_root, scene, '*.png')))
-            for i in range(len(image_list)-1):
-                self.image_list += [ [image_list[i], image_list[i+1]] ]
-                self.extra_info += [ (scene, i) ] # scene and frame_id
+
+            # maomao change
+            len_img_list = len(image_list)
+            chunk_size = 6
+            num_chunk = len_img_list // chunk_size
+
+            for i in range(num_chunk):
+                order_chunk = np.linspace(i * chunk_size, (i + 1) * chunk_size, chunk_size, endpoint=False).astype(np.int64)
+                order_chunk_permutation = np.random.permutation(order_chunk)
+                for j in range(chunk_size//2):
+                    min_order ,max_order = min(order_chunk_permutation[j*2],order_chunk_permutation[1+j*2]), max(order_chunk_permutation[j*2],order_chunk_permutation[1+j*2])
+                    self.image_list += [ [image_list[min_order], image_list[max_order]] ]
+                    self.extra_info += [(scene, min_order+1,max_order+1)]  # scene and frame_id
+
+            # for i in range(len(image_list)-1):
+            #     self.image_list += [ [image_list[i], image_list[i+1]] ]
+            #     self.extra_info += [ (scene, i) ] # scene and frame_id
 
             if split != 'test':
                 self.flow_list += sorted(glob(osp.join(flow_root, scene, '*.flo')))
@@ -157,7 +171,7 @@ class FlyingThings3D(FlowDataset):
                             self.image_list += [ [images[i+1], images[i]] ]
                             self.flow_list += [ flows[i+1] ]
       
-
+# maomao change
 class KITTI(FlowDataset):
     def __init__(self, aug_params=None, split='training', root='datasets/KITTI'):
         super(KITTI, self).__init__(aug_params, sparse=True)
