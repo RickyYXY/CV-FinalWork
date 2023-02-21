@@ -3,7 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-def seq_photo_loss(flow_preds_fw, flow_preds_bw, im1, im2, gamma=0.8,):
+def seq_photo_loss(flow_preds_fw, flow_preds_bw, im1, im2,
+                   use_occ=False, gamma=0.8,):
     """
     Args:
         flow_preds_fw/bw: List[Tensor: B x 2 x H x W]
@@ -22,9 +23,9 @@ def seq_photo_loss(flow_preds_fw, flow_preds_bw, im1, im2, gamma=0.8,):
         im2_warp = torch_warp(im1, flow_preds_bw[i])
 
         photo_loss = photo_loss_multi_type(
-            im1, im1_warp, occ_fw, photo_loss_use_occ=True)
+            im1, im1_warp, occ_fw, photo_loss_use_occ=use_occ)
         photo_loss += photo_loss_multi_type(
-            im2, im2_warp, occ_bw, photo_loss_use_occ=True)
+            im2, im2_warp, occ_bw, photo_loss_use_occ=use_occ)
 
         photo_loss_sum += i_weight * photo_loss
 

@@ -192,9 +192,10 @@ def train(args):
             loss, metrics = seq_photo_loss(
                 flow_preds_fw, flow_preds_bw,
                 image1, image2,
-                args.gamma
+                True if total_steps > args.num_steps//3 else False,
+                args.gamma,
             )
-            
+
             scaler.scale(loss).backward()
             scaler.unscale_(optimizer)
             torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
