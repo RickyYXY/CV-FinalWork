@@ -89,12 +89,16 @@ def count_parameters(model):
 
 def fetch_optimizer(args, model):
     """ Create the optimizer and learning rate scheduler """
-    optimizer = optim.AdamW(model.parameters(), lr=args.lr,
-                            weight_decay=args.wdecay, eps=args.epsilon)
+    optimizer = optim.AdamW(model.parameters(), lr=args.lr, amsgrad=True,
+                            weight_decay=args.wdecay)
 
-    scheduler = optim.lr_scheduler.OneCycleLR(optimizer, args.lr, args.num_steps+100,
-                                              pct_start=0.05, cycle_momentum=False, anneal_strategy='linear')
+    # scheduler = optim.lr_scheduler.OneCycleLR(optimizer, args.lr, args.num_steps+100,
+    #                                           pct_start=0.05, cycle_momentum=False, anneal_strategy='linear')
 
+    scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=1)
+
+    # print('inside optimizer',optimizer)
+    # print('inside sheduler',scheduler)
     return optimizer, scheduler
 
 
@@ -164,6 +168,9 @@ def train(args):
 
     train_loader = datasets.fetch_dataloader(args)
     optimizer, scheduler = fetch_optimizer(args, model)
+
+    print('optimizer',optimizer,'\n')
+    print('scheduler', scheduler, '\n')
 
     total_steps = 0
     scaler = GradScaler(enabled=args.mixed_precision)
@@ -248,11 +255,11 @@ if __name__ == '__main__':
     parser.add_argument('--validation', type=str, nargs='+')
 
     parser.add_argument('--lr', type=float, default=0.00002)
-    parser.add_argument('--num_steps', type=int, default=100000)
-    parser.add_argument('--batch_size', type=int, default=6)
+    parser.add_argument('--num_steps', type=int, default=10000000)
+    parser.add_argument('--batch_size', type=int, default=5)
     parser.add_argument('--image_size', type=int,
                         nargs='+', default=[384, 512])
-    parser.add_argument('--gpus', type=int, nargs='+', default=[0, 1])
+    parser.add_argument('--gpus', type=int, nargs='+', default=[0,1])
     parser.add_argument('--mixed_precision',
                         action='store_true', help='use mixed precision')
 
