@@ -191,7 +191,7 @@ def train(args):
 
             loss, metrics = seq_photo_loss(
                 flow_preds_fw, flow_preds_bw,
-                image1, image2,
+                image1/255.0, image2/255.0,
                 True if total_steps > args.num_steps//3 else False,
                 args.gamma,
             )
