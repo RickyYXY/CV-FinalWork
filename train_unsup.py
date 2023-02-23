@@ -92,10 +92,12 @@ def fetch_optimizer(args, model):
     optimizer = optim.AdamW(model.parameters(), lr=args.lr, amsgrad=True,
                             weight_decay=args.wdecay)
 
-    # scheduler = optim.lr_scheduler.OneCycleLR(optimizer, args.lr, args.num_steps+100,
-    #                                           pct_start=0.05, cycle_momentum=False, anneal_strategy='linear')
+    scheduler = optim.lr_scheduler.OneCycleLR(optimizer, args.lr, args.num_steps+100,
+                                               pct_start=0.05, cycle_momentum=False, anneal_strategy='linear')
 
-    scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=1)
+
+
+    #scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=1)
 
     # print('inside optimizer',optimizer)
     # print('inside sheduler',scheduler)
@@ -255,7 +257,7 @@ if __name__ == '__main__':
     parser.add_argument('--validation', type=str, nargs='+')
 
     parser.add_argument('--lr', type=float, default=0.00002)
-    parser.add_argument('--num_steps', type=int, default=10000000)
+    parser.add_argument('--num_steps', type=int, default=1000000)
     parser.add_argument('--batch_size', type=int, default=5)
     parser.add_argument('--image_size', type=int,
                         nargs='+', default=[384, 512])
