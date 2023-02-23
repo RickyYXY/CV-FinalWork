@@ -169,7 +169,7 @@ def train(args):
     train_loader = datasets.fetch_dataloader(args)
     optimizer, scheduler = fetch_optimizer(args, model)
 
-    print('optimizer',optimizer,'\n')
+    print('optimizer', optimizer, '\n')
     print('scheduler', scheduler, '\n')
 
     total_steps = 0
@@ -199,7 +199,7 @@ def train(args):
             loss, metrics = seq_photo_loss(
                 flow_preds_fw, flow_preds_bw,
                 image1/255.0, image2/255.0,
-                True if total_steps > args.num_steps//3 else False,
+                True if total_steps > int(args.num_steps*4/5) else False,
                 args.gamma,
             )
 
@@ -259,7 +259,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=5)
     parser.add_argument('--image_size', type=int,
                         nargs='+', default=[384, 512])
-    parser.add_argument('--gpus', type=int, nargs='+', default=[0,1])
+    parser.add_argument('--gpus', type=int, nargs='+', default=[0, 1])
     parser.add_argument('--mixed_precision',
                         action='store_true', help='use mixed precision')
 

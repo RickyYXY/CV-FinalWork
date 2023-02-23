@@ -22,10 +22,11 @@ def seq_photo_loss(flow_preds_fw, flow_preds_bw, im1, im2,
         im1_warp = torch_warp(im2, flow_preds_fw[i])
         im2_warp = torch_warp(im1, flow_preds_bw[i])
 
+        local_use_occ = use_occ and i >= n_predictions-3
         photo_loss = photo_loss_multi_type(
-            im1, im1_warp, occ_fw, photo_loss_use_occ=use_occ)
+            im1, im1_warp, occ_fw, photo_loss_use_occ=local_use_occ)
         photo_loss += photo_loss_multi_type(
-            im2, im2_warp, occ_bw, photo_loss_use_occ=use_occ)
+            im2, im2_warp, occ_bw, photo_loss_use_occ=local_use_occ)
 
         photo_loss_sum += i_weight * photo_loss
 
